@@ -26,6 +26,16 @@ var events = allEvents{
 	},
 }
 
+func getOneEvent(w http.ResponseWriter, r *http.Request) {
+	eventID := mux.Vars(r)["id"]
+
+	for _, singleEvent := range events {
+		if singleEvent.ID == eventID {
+			json.NewEncoder(w).Encode(singleEvent)
+		}
+	}
+}
+
 func createEvent(w http.ResponseWriter, r *http.Request) {
 	var newEvent event
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -48,5 +58,6 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/event", createEvent)
+	router.HandleFunc("/events/{id}", getOneEvent)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
